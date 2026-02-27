@@ -79,12 +79,8 @@ public class ChunkLoadManager {
         cooldownMap.entrySet().removeIf(e -> now - e.getValue() > ConfigManager.get().cooldownTicks() * 2
         );
     }
-    public static Set<ChunkPos> getActiveChunks() {
-        return activeChunks.keySet();
-    }
-    public static long getExpireTime(ChunkPos pos) {
-        return activeChunks.getOrDefault(pos, 0L);
-    }
+    public static Set<ChunkPos> getActiveChunks() { return activeChunks.keySet(); }
+    public static long getExpireTime(ChunkPos pos) { return activeChunks.getOrDefault(pos, 0L); }
     public static long getServerTime() {
         if (server == null) return 0;
         return server.getOverworld().getTime();
