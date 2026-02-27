@@ -19,14 +19,12 @@ public class ChunkLoadManager {
 
     public static void init(MinecraftServer mcServer) {
         server = mcServer;
-        log.info("ChunkLoadManager initialized.");
+        log.info("ChunkLoadManager initialized successfully");
     }
     public static void cleanupAll() {
-        if (server == null) {
-            log.warn("Cleanup skipped: server is null.");
-            return;
-        }
-        log.info("Cleaning up {} forced chunks before shutdown...", activeChunks.size());
+        if (server == null) return;
+
+        int count = activeChunks.size();
         for (ChunkPos pos : activeChunks.keySet()) {
             for (ServerWorld world : server.getWorlds()) {
                 world.setChunkForced(pos.x, pos.z, false);
@@ -34,14 +32,13 @@ public class ChunkLoadManager {
         }
         activeChunks.clear();
         cooldownMap.clear();
-        log.info("All forced chunks successfully released.");
+        log.info("Released {} forced chunks", count);
     }
     public static void trigger(ServerWorld world, BlockPos pos) {
         long now = world.getTime();
         long cooldown = ConfigManager.get().cooldownTicks();
 
         if (cooldownMap.containsKey(pos) && now - cooldownMap.get(pos) < cooldown) {
-            log.debug("Trigger skipped due to cooldown at {}", pos);
             return;
         }
         cooldownMap.put(pos, now);
@@ -54,16 +51,13 @@ public class ChunkLoadManager {
                 ChunkPos target = new ChunkPos(center.x + x, center.z + z);
                 if (!activeChunks.containsKey(target)) {
                     world.setChunkForced(target.x, target.z, true);
-                    log.debug("Forced chunk {} loaded.", target);
-                } else {
-                    log.debug("Refreshed chunk {} expiration.", target);
                 }
-
                 activeChunks.put(target, expireTime);
             }
         }
     }
     public static void tick(MinecraftServer server) {
+        if (ChunkLoadManager.server == null) ChunkLoadManager.server = server;
         long now = server.getOverworld().getTime();
         Iterator<Map.Entry<ChunkPos, Long>> iterator = activeChunks.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -72,12 +66,10 @@ public class ChunkLoadManager {
                 for (ServerWorld world : server.getWorlds()) {
                     world.setChunkForced(entry.getKey().x, entry.getKey().z, false);
                 }
-                log.debug("Chunk {} expired and unloaded.", entry.getKey());
                 iterator.remove();
             }
         }
-        cooldownMap.entrySet().removeIf(e -> now - e.getValue() > ConfigManager.get().cooldownTicks() * 2
-        );
+        cooldownMap.entrySet().removeIf(e -> now - e.getValue() > ConfigManager.get().cooldownTicks() * 2);
     }
     public static Set<ChunkPos> getActiveChunks() { return activeChunks.keySet(); }
     public static long getExpireTime(ChunkPos pos) { return activeChunks.getOrDefault(pos, 0L); }

@@ -21,6 +21,6 @@ public class Noteloader implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> ChunkLoadManager.cleanupAll());
         ServerTickEvents.END_SERVER_TICK.register(ChunkLoadManager::tick);
         NoteLoaderCommand.register();
-        log.info("NoteLoader {} loaded.", FabricLoader.getInstance().getModContainer("noteloader").map(ModContainer::getMetadata).map(meta -> meta.getVersion().getFriendlyString()).orElse("unknown"));
+        log.info("NoteLoader {} loaded", FabricLoader.getInstance().getModContainer("noteloader").map(ModContainer::getMetadata).map(meta -> meta.getVersion().getFriendlyString()).orElse("unknown"));
     }
 }
