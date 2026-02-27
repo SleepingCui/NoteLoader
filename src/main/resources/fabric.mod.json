@@ -3,7 +3,7 @@
   "id": "noteloader",
   "version": "${version}",
   "name": "NoteLoader",
-  "description": "A Minecraft server mod that forces chunk loading.",
+  "description": "A Minecraft server mod that forces chunk loading",
   "authors": ["SleepingCui"],
   "contact": {},
   "license": "MIT",
