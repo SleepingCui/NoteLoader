@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "noteloader",
+  "version": "${version}",
+  "name": "NoteLoader",
+  "description": "A Minecraft server mod that forces chunk loading.",
+  "authors": ["SleepingCui"],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/noteloader/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "fabric-datagen": [
+      "net.noteloader.client.NoteloaderDataGenerator"
+    ],
+    "main": [
+      "net.noteloader.Noteloader"
+    ]
+  },
+  "mixins": [
+    "noteloader.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.noteloader.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MixinNoteBlock"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
