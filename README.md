@@ -11,8 +11,8 @@ NoteLoader is a Minecraft server mod for version 1.21+ that allows chunks around
 
 - `/noteloader info` – Display all currently forced chunks and remaining ticks.
 - `/noteloader reload` – Reload the configuration file.
-- `/noteloader setradius <value>` – Set the loading radius.
-- `/noteloader setduration <ticks>` – Set how long chunks remain loaded.
+- `/noteloader set radius <value>` – Set the loading radius.
+- `/noteloader set duration <ticks>` – Set how long chunks remain loaded.
 - `/noteloader cleanall` – Instantly clears all currently forced chunks across all dimensions.
 
 ## Installation
