@@ -5,10 +5,8 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.ChunkPos;
 import net.noteloader.manager.ChunkLoadManager;
 import net.noteloader.manager.ConfigManager;
-import java.util.Set;
 
 public class NoteLoaderCommand {
     public static void register() {
@@ -17,6 +15,7 @@ public class NoteLoaderCommand {
                         .requires(source -> source.hasPermissionLevel(2))
                         .then(CommandManager.literal("info").executes(ctx -> executeInfo(ctx.getSource())))
                         .then(CommandManager.literal("reload").executes(ctx -> executeReload(ctx.getSource())))
+                        .then(CommandManager.literal("cleanall").executes(ctx -> executeCleanAll(ctx.getSource())))
                         .then(CommandManager.literal("set")
                                 .then(CommandManager.literal("radius")
                                         .then(CommandManager.argument("value", IntegerArgumentType.integer(0))
@@ -28,23 +27,24 @@ public class NoteLoaderCommand {
         );
     }
     private static int executeInfo(ServerCommandSource source) {
-        Set<ChunkPos> activeChunks = ChunkLoadManager.getActiveChunks();
+        java.util.Set<ChunkLoadManager.DimensionChunkPos> activeChunks = ChunkLoadManager.getActiveChunks();
         if (activeChunks.isEmpty()) {
             source.sendFeedback(() -> Text.literal("[NoteLoader] No forced chunks currently active."), false);
             return 1;
         }
         source.sendFeedback(() -> Text.literal("[NoteLoader] Active Forced Chunks: " + activeChunks.size()), false);
         long currentTime = ChunkLoadManager.getServerTime();
-        for (ChunkPos chunk : activeChunks) {
-            long remaining = Math.max(0, ChunkLoadManager.getExpireTime(chunk) - currentTime);
-            String info = String.format("[NoteLoader] Chunk [%d,%d] | Remaining %dticks", chunk.x, chunk.z, remaining);
+
+        for (ChunkLoadManager.DimensionChunkPos dimChunk : activeChunks) {
+            long remaining = Math.max(0, ChunkLoadManager.getExpireTime(dimChunk) - currentTime);
+            String info = String.format("[NoteLoader] Chunk [%d,%d] in %s | Remaining %d tick(s)", dimChunk.pos().x, dimChunk.pos().z, dimChunk.dimension().getValue().getPath(), remaining);
             source.sendFeedback(() -> Text.literal(info), false);
         }
         return 1;
     }
     private static int executeReload(ServerCommandSource source) {
         ConfigManager.load();
-        String msg = String.format("[NoteLoader] Config reloaded. Radius: %d, Duration: %d ticks", ConfigManager.get().radius(), ConfigManager.get().durationTicks());
+        String msg = String.format("[NoteLoader] Config reloaded. Radius: %d, Duration: %d tick(s)", ConfigManager.get().radius(), ConfigManager.get().durationTicks());
         source.sendFeedback(() -> Text.literal(msg), false);
         return 1;
     }
@@ -56,6 +56,11 @@ public class NoteLoaderCommand {
     private static int executeSetDuration(ServerCommandSource source, int ticks) {
         ConfigManager.setDuration(ticks);
         source.sendFeedback(() -> Text.literal("[NoteLoader] Duration set to " + ticks + " ticks"), false);
+        return 1;
+    }
+    private static int executeCleanAll(ServerCommandSource source) {
+        String msg = String.format("[NoteLoader] Released %d forced chunks", ChunkLoadManager.cleanupAll());
+        source.sendFeedback(() -> Text.literal(msg), true);
         return 1;
     }
 }
