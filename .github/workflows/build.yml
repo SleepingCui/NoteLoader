@@ -4,7 +4,25 @@
 # against bad commits.
 
 name: build
-on: [pull_request, push]
+on:
+  push:
+    paths:
+      - 'src/**'                 
+      - 'build.gradle'           
+      - 'settings.gradle'       
+      - 'gradle.properties'     
+      - 'gradle/**'            
+      - 'gradlew'      
+      - '.github/workflows/**'  
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle.properties'
+      - 'gradle/**'
+      - 'gradlew'
+      - '.github/workflows/**'
 
 jobs:
   build:
